@@ -23,20 +23,49 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 //initialize firestore database
 const db = firebase.firestore();
+//create empty array
+const blogpostsArray = [];
+//create reference to collection
+const blogposts = db.collection("blogposts");
 //get blog posts
-const blogposts = db.collection('blogposts').get()
+const allBlogposts = blogposts
+  .get()
   .then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       console.log(`${doc.id} => ${doc.data()}`);
+      blogpostsArray.push(doc.data());
     });
   })
   .catch(function (error) {
-    console.log(error);
+    console.log("Error:", error);
+  });
+//get single blog post
+const documentToGet = "sample-post"; //should be the name of your id in cloud firestore
+const singleBlogPost = blogposts
+  .doc(documentToGet)
+  .get()
+  .then(function (doc) {
+    if (doc.exists) {
+      console.log("Document data:", doc.data());
+    }
+    else {
+      // doc.data is undefined
+      console.log("no such document!");
+    }
+  })
+  .catch(function (error) {
+    console.log("Error:", error);
   });
 
+//import routes
+const indexRoute = require("./routes/index.js");
+const postRoute = require("./routes/posts.js");
+const createRoute = require("./routes/createArticle");
 
-
+//create base route
+// send json array as response
 app.get('/', (req, res) => res.send('Exercise Four'));
 
+//set up app so that it runs when this file is run
 app.listen(port, () =>
     console.log(`Example app listening at http://localhost:${port}`));
