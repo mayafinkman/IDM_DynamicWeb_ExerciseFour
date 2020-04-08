@@ -7,7 +7,7 @@ const app = express();
 const port = process.env.PORT || 4000;
 
 //require firebase
-var firebase = require("firebase/app");
+var firebase = require("firebase");
 //get configuration object so we can communicate with fire base
 const firebaseConfig = {
     apiKey: "AIzaSyAsJ9qUESsP4QN0DyETQM806sPVUF0T9IE",
@@ -18,6 +18,23 @@ const firebaseConfig = {
     messagingSenderId: "266249443407",
     appId: "1:266249443407:web:81137949229749e461723a"
   };
+
+  //Initialize firebase
+firebase.initializeApp(firebaseConfig);
+//initialize firestore database
+const db = firebase.firestore();
+//get blog posts
+const blogposts = db.collection('blogposts').get()
+  .then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data()}`);
+    });
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+
+
 
 app.get('/', (req, res) => res.send('Exercise Four'));
 
